@@ -262,6 +262,64 @@
     animation: hintBlink 2.5s ease-in-out infinite 5s;
     opacity: 0; white-space: nowrap; z-index: 10;
   }
+
+  /* ── ENTRY SCREEN ── */
+  #entry {
+    position: fixed; inset: 0; z-index: 1000;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 22px;
+    background: radial-gradient(ellipse at center, #0d1550 0%, #04050f 70%);
+    cursor: none;
+    transition: opacity .9s ease, visibility .9s;
+  }
+  #entry.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .entry-moon {
+    font-size: clamp(52px,14vw,90px);
+    animation: entryFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 24px rgba(245,200,66,.7));
+  }
+  @keyframes entryFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+  .entry-title {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(20px,5vw,36px);
+    background: linear-gradient(135deg, #fff8d0, #f5c842, #e8a020);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    letter-spacing: .06em; text-align: center; padding: 0 20px;
+  }
+
+  .entry-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(12px,2.5vw,16px);
+    color: rgba(245,200,66,.6);
+    letter-spacing: .25em; text-transform: uppercase;
+    text-align: center;
+    animation: entryPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes entryPulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+  .entry-ring {
+    width: clamp(80px,18vw,120px); height: clamp(80px,18vw,120px);
+    border-radius: 50%;
+    border: 1.5px solid rgba(245,200,66,.3);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    animation: ringGlow 2s ease-in-out infinite;
+  }
+  .entry-ring::before {
+    content: ''; position: absolute; inset: -8px; border-radius: 50%;
+    border: 1px solid rgba(245,200,66,.12);
+  }
+  .entry-ring::after {
+    content: ''; position: absolute; inset: -16px; border-radius: 50%;
+    border: 1px solid rgba(245,200,66,.06);
+  }
+  @keyframes ringGlow {
+    0%,100%{box-shadow:0 0 18px rgba(245,200,66,.2)}
+    50%{box-shadow:0 0 36px rgba(245,200,66,.45)}
+  }
 </style>
 </head>
 <body>
@@ -269,6 +327,15 @@
 <div id="cursor"></div>
 <canvas id="sky"></canvas>
 <canvas id="fw"></canvas>
+
+<!-- ════ ENTRY SCREEN ════ -->
+<div id="entry">
+  <div class="entry-ring">
+    <span class="entry-moon">🌙</span>
+  </div>
+  <div class="entry-title">Eid Mubarak</div>
+  <div class="entry-sub">✦ tap anywhere to begin ✦</div>
+</div>
 
 <div class="scene">
 
@@ -527,11 +594,38 @@ function burst(x, y, n=80) {
   requestAnimationFrame(fwLoop);
 })();
 
-// Auto-burst on load
-const autoPos = [[.25,.32],[.75,.28],[.5,.22],[.15,.38],[.85,.35]];
-autoPos.forEach(([rx,ry], i) =>
-  setTimeout(() => burst(rx * innerWidth, ry * innerHeight, 90), 1800 + i * 260)
-);
+/* ══════════════════════════════════════
+   ENTRY SCREEN — dismiss on first touch
+   Audio starts here (browsers require
+   at least one user gesture first)
+══════════════════════════════════════ */
+const entry = document.getElementById('entry');
+let entered = false;
+
+function handleEntry() {
+  if (entered) return;
+  entered = true;
+  entry.classList.add('gone');
+
+  // Start ambience automatically on first gesture
+  USE_CUSTOM_AUDIO ? startCustom() : startSynth();
+
+  // Update badge to show "on" state
+  const badge = document.getElementById('ambience-badge');
+  const icon  = document.getElementById('music-icon');
+  badge.style.borderColor = 'rgba(245,200,66,.85)';
+  badge.style.boxShadow   = '0 0 30px rgba(245,200,66,.55), inset 0 0 18px rgba(245,200,66,.14)';
+  icon.style.opacity = '1';
+
+  // Auto-burst fireworks after a short delay
+  const autoPos = [[.25,.32],[.75,.28],[.5,.22],[.15,.38],[.85,.35]];
+  autoPos.forEach(([rx,ry], i) =>
+    setTimeout(() => burst(rx * innerWidth, ry * innerHeight, 90), 500 + i * 260)
+  );
+}
+
+entry.addEventListener('click',      () => handleEntry());
+entry.addEventListener('touchstart', () => handleEntry(), {passive: true});
 
 // Moon click = grand fireworks show
 document.getElementById('moonWrap').addEventListener('click', () => {
@@ -545,7 +639,8 @@ document.getElementById('moonWrap').addEventListener('click', () => {
 
 // Click anywhere else = mini ripple + small burst
 document.addEventListener('click', e => {
-  if (e.target.closest('#moonWrap, #ambience-badge')) return;
+  if (!entered) return;
+  if (e.target.closest('#moonWrap, #ambience-badge, #entry')) return;
   const r = document.createElement('div');
   r.className = 'ripple';
   r.style.left = e.clientX + 'px'; r.style.top = e.clientY + 'px';
@@ -556,8 +651,9 @@ document.addEventListener('click', e => {
 
 // Touch = burst
 document.addEventListener('touchstart', e => {
+  if (!entered) return;
   const t = e.touches[0];
-  if (t.target.closest('#ambience-badge')) return;
+  if (t.target.closest('#ambience-badge, #entry')) return;
   burst(t.clientX, t.clientY, 40);
   const r = document.createElement('div');
   r.className = 'ripple';
