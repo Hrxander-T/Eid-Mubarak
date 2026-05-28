@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eid Mubarak ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #f5c842;
+    --gold2: #e8a020;
+    --deep: #04050f;
+    --navy: #070b28;
+    --glow: #ffd700;
+    --white: #fff8ee;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow-x: hidden;
+    background: var(--deep);
+    font-family: 'Cormorant Garamond', serif;
+    cursor: none;
+  }
+
+  /* ── CUSTOM CURSOR ── */
+  #cursor {
+    position: fixed; width: 14px; height: 14px;
+    border-radius: 50%; background: var(--gold);
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: width .15s, height .15s, opacity .15s;
+    mix-blend-mode: screen;
+    box-shadow: 0 0 10px var(--gold), 0 0 26px var(--gold2);
+  }
+  #cursor.big { width: 36px; height: 36px; opacity: .5; }
+  @media (pointer: coarse) { #cursor { display: none; } }
+
+  /* ── CANVASES ── */
+  #sky { position: fixed; inset: 0; z-index: 0; }
+  #fw  { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+
+  /* ── SCENE ── */
+  .scene {
+    position: relative; min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 5;
+    padding: clamp(16px,4vw,40px) 16px clamp(100px,18vh,160px);
+  }
+
+  /* ════════════════════════════
+     MOON  —  clickable trigger
+  ════════════════════════════ */
+  .moon-wrap {
+    position: absolute;
+    top: clamp(20px,6vh,60px);
+    right: clamp(14px,8vw,90px);
+    cursor: none;
+    animation: moonFloat 6s ease-in-out infinite;
+    z-index: 10;
+  }
+  .moon {
+    width: clamp(64px,11vw,110px);
+    height: clamp(64px,11vw,110px);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fffbe0 0%, #f5c842 50%, #e8a020 100%);
+    box-shadow: 0 0 35px 12px rgba(245,200,66,.55),
+                0 0 70px 28px rgba(245,200,66,.25),
+                0 0 140px 55px rgba(245,200,66,.1);
+    position: relative;
+    animation: moonPulse 3s ease-in-out infinite;
+    transition: transform .2s;
+  }
+  .moon:hover { transform: scale(1.08); }
+  .moon:active { transform: scale(.94); }
+  .moon::after {
+    content: ''; position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(circle at 38% 28%, rgba(255,255,255,.38), transparent 65%);
+  }
+  .moon-hint {
+    text-align: center;
+    font-size: clamp(9px,1.5vw,11px);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: rgba(245,200,66,.55);
+    margin-top: 8px;
+    animation: hintBlink 2.5s ease-in-out infinite 3.5s;
+    opacity: 0;
+  }
+  @keyframes hintBlink { 0%,100%{opacity:0} 50%{opacity:1} }
+  @keyframes moonFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-13px)} }
+  @keyframes moonPulse {
+    0%,100%{box-shadow:0 0 35px 12px rgba(245,200,66,.55),0 0 70px 28px rgba(245,200,66,.25)}
+    50%{box-shadow:0 0 55px 22px rgba(245,200,66,.75),0 0 110px 44px rgba(245,200,66,.38)}
+  }
+
+  /* ── LANTERNS ── */
+  .lantern {
+    position: absolute; top: 0;
+    animation: sway 4s ease-in-out infinite;
+    transform-origin: top center;
+    z-index: 8;
+  }
+  .lantern.left  { left: clamp(6px,3vw,28px);  animation-delay: 0s; }
+  .lantern.right { right: clamp(6px,3vw,28px); animation-delay: -2s; }
+  .lantern svg { width: clamp(34px,6vw,64px); filter: drop-shadow(0 0 12px rgba(255,155,30,.85)); }
+  @keyframes sway { 0%,100%{transform:rotate(-9deg)} 50%{transform:rotate(9deg)} }
+
+  /* ── SHOOTING STAR ── */
+  .shoot {
+    position: fixed; width: clamp(80px,15vw,130px); height: 1.5px;
+    background: linear-gradient(90deg, transparent, white 40%, transparent);
+    border-radius: 2px; pointer-events: none;
+    animation: shoot 9s linear infinite; opacity: 0;
+    top: 12%; left: -15%;
+  }
+  @keyframes shoot {
+    0%   { opacity:0; top:10%; left:-15%; transform:rotate(-22deg) }
+    4%   { opacity:1 }
+    22%  { opacity:0; top:32%; left:115%; transform:rotate(-22deg) }
+    100% { opacity:0; top:32%; left:115% }
+  }
+
+  /* ── FLOATING PARTICLES ── */
+  .particle {
+    position: fixed; border-radius: 50%; pointer-events: none;
+    animation: rise var(--dur,6s) ease-in infinite var(--del,0s);
+    opacity: 0;
+  }
+  @keyframes rise {
+    0%   { opacity:0; transform:translateY(0) scale(1) }
+    15%  { opacity:.9 }
+    85%  { opacity:.3 }
+    100% { opacity:0; transform:translateY(-100vh) scale(.2) }
+  }
+
+  /* ── MOSQUE ── */
+  .mosque-wrap {
+    position: absolute; bottom: 0; left: 50%;
+    width: min(100vw, 900px);
+    animation: mosqueRise 1.8s cubic-bezier(.22,1,.36,1) .5s both;
+    z-index: 4;
+  }
+  @keyframes mosqueRise {
+    from { opacity:0; transform:translateX(-50%) translateY(60px) }
+    to   { opacity:1; transform:translateX(-50%) translateY(0) }
+  }
+
+  /* ── ORNAMENT LINE ── */
+  .ornament {
+    display: flex; align-items: center; gap: clamp(8px,2vw,18px);
+    margin: clamp(10px,2vh,18px) auto;
+    opacity: 0; animation: fadeUp 1s ease .9s both;
+    width: min(90vw, 460px);
+  }
+  .orn-line { flex:1; height:1px; background: linear-gradient(90deg,transparent,var(--gold),transparent); }
+  .orn-gem  { font-size: clamp(14px,2.5vw,20px); animation: spinGem 8s linear infinite; color: var(--gold); }
+  @keyframes spinGem { to { transform:rotate(360deg) } }
+
+  /* ── TITLE BLOCK ── */
+  .title-wrap {
+    text-align: center; position: relative; z-index: 10;
+    opacity: 0; animation: fadeUp 1.1s cubic-bezier(.22,1,.36,1) .6s both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none} }
+
+  .eid-arabic {
+    font-family: 'Noto Nastaliq Urdu', serif;
+    font-size: clamp(20px,4.5vw,46px);
+    color: var(--gold);
+    text-shadow: 0 0 28px rgba(245,200,66,.55);
+    display: block; margin-bottom: 6px;
+    letter-spacing: .04em;
+  }
+
+  .eid-title {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(34px,9vw,100px);
+    font-weight: 900; line-height: 1.05;
+    background: linear-gradient(135deg,
+      #fff8d0 0%, #f5c842 25%, #ffd700 50%, #e8a020 72%, #fff0a0 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    filter: drop-shadow(0 0 18px rgba(245,200,66,.45));
+    position: relative; display: inline-block;
+  }
+  .eid-title::after {
+    content: attr(data-text);
+    position: absolute; inset: 0;
+    background: linear-gradient(110deg,
+      transparent 0%, transparent 35%,
+      rgba(255,255,255,.55) 50%,
+      transparent 65%, transparent 100%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    animation: shimmer 3.5s linear infinite 2.8s;
+    pointer-events: none;
+  }
+  @keyframes shimmer { 0%{background-position:250% 0} 100%{background-position:-250% 0} }
+
+  .subtitle {
+    font-size: clamp(13px,2.8vw,21px);
+    color: #ffe7aa; font-style: italic; font-weight: 300;
+    letter-spacing: .12em;
+    opacity: 0; animation: fadeUp 1s ease 1.4s both;
+    margin-top: 4px;
+  }
+
+  /* ════════════════════════════
+     AMBIENCE BADGE  (no pill)
+  ════════════════════════════ */
+  #ambience-badge {
+    position: fixed;
+    bottom: clamp(60px,10vh,90px);
+    left: clamp(14px,3vw,28px);
+    z-index: 30;
+    width: clamp(48px,8vw,64px);
+    height: clamp(48px,8vw,64px);
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 38%, #1a2460, #070b28);
+    border: 1.5px solid rgba(245,200,66,.35);
+    box-shadow: 0 0 18px rgba(245,200,66,.2), inset 0 0 12px rgba(245,200,66,.06);
+    display: flex; align-items: center; justify-content: center;
+    cursor: none;
+    transition: box-shadow .25s, transform .2s, border-color .25s;
+    animation: fadeBadge 1s ease 3.5s both;
+  }
+  @keyframes fadeBadge { from{opacity:0;transform:scale(.7)} to{opacity:1;transform:scale(1)} }
+  #ambience-badge:hover {
+    box-shadow: 0 0 30px rgba(245,200,66,.5), inset 0 0 20px rgba(245,200,66,.12);
+    border-color: rgba(245,200,66,.7);
+    transform: scale(1.1);
+  }
+  #ambience-badge:active { transform: scale(.93); }
+  #ambience-badge svg { width: 52%; height: 52%; }
+  #ambience-badge .badge-label {
+    position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+    font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
+    color: rgba(245,200,66,.5); white-space: nowrap;
+  }
+
+  /* Ripple on click */
+  .ripple {
+    position: fixed; border-radius: 50%; pointer-events: none;
+    width: 0; height: 0;
+    background: radial-gradient(circle, rgba(245,200,66,.55), transparent 70%);
+    transform: translate(-50%,-50%);
+    animation: rippleOut .65s ease-out forwards;
+    z-index: 8;
+  }
+  @keyframes rippleOut { to { width:180px; height:180px; opacity:0 } }
+
+  /* ── TOUCH HINT ── */
+  .tap-hint {
+    position: absolute; bottom: clamp(145px,22vh,185px); left: 50%;
+    transform: translateX(-50%);
+    font-size: clamp(10px,1.8vw,12px);
+    color: rgba(255,220,100,.45);
+    letter-spacing: .2em; text-transform: uppercase;
+    animation: hintBlink 2.5s ease-in-out infinite 5s;
+    opacity: 0; white-space: nowrap; z-index: 10;
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<canvas id="sky"></canvas>
+<canvas id="fw"></canvas>
+
+<div class="scene">
+
+  <!-- ═══ MOON (click = fireworks) ═══ -->
+  <div class="moon-wrap" id="moonWrap">
+    <div class="moon" id="moon"></div>
+    <div class="moon-hint">✦ tap me ✦</div>
+  </div>
+
+  <!-- ═══ LANTERNS ═══ -->
+  <div class="lantern left">
+    <svg viewBox="0 0 60 110" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="flame1" cx="50%" cy="60%"><stop offset="0%" stop-color="#ffe066" stop-opacity=".9"/><stop offset="100%" stop-color="#ff8800" stop-opacity="0"/></radialGradient>
+        <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6b1a00" stop-opacity=".5"/><stop offset="50%" stop-color="transparent"/><stop offset="100%" stop-color="#6b1a00" stop-opacity=".5"/></linearGradient>
+      </defs>
+      <line x1="30" y1="0" x2="30" y2="12" stroke="#c8860a" stroke-width="2"/>
+      <rect x="17" y="12" width="26" height="6" rx="3" fill="#c8860a"/>
+      <ellipse cx="30" cy="25" rx="18" ry="8" fill="#d4880e"/>
+      <rect x="12" y="25" width="36" height="55" rx="6" fill="#c05000" fill-opacity=".85"/>
+      <rect x="12" y="25" width="36" height="55" rx="6" fill="url(#lg1)"/>
+      <line x1="12" y1="41" x2="48" y2="41" stroke="#8b3a00" stroke-width="1.2" stroke-opacity=".6"/>
+      <line x1="12" y1="57" x2="48" y2="57" stroke="#8b3a00" stroke-width="1.2" stroke-opacity=".6"/>
+      <line x1="12" y1="73" x2="48" y2="73" stroke="#8b3a00" stroke-width="1.2" stroke-opacity=".6"/>
+      <ellipse cx="30" cy="80" rx="18" ry="8" fill="#d4880e"/>
+      <line x1="30" y1="88" x2="24" y2="100" stroke="#c8860a" stroke-width="1.5"/>
+      <line x1="30" y1="88" x2="30" y2="102" stroke="#c8860a" stroke-width="1.5"/>
+      <line x1="30" y1="88" x2="36" y2="100" stroke="#c8860a" stroke-width="1.5"/>
+      <ellipse cx="30" cy="52" rx="12" ry="14" fill="url(#flame1)"/>
+    </svg>
+  </div>
+
+  <div class="lantern right">
+    <svg viewBox="0 0 60 110" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="flame2" cx="50%" cy="60%"><stop offset="0%" stop-color="#a0d4ff" stop-opacity=".9"/><stop offset="100%" stop-color="#0040cc" stop-opacity="0"/></radialGradient>
+        <linearGradient id="lg2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#000850" stop-opacity=".5"/><stop offset="50%" stop-color="transparent"/><stop offset="100%" stop-color="#000850" stop-opacity=".5"/></linearGradient>
+      </defs>
+      <line x1="30" y1="0" x2="30" y2="12" stroke="#1050cc" stroke-width="2"/>
+      <rect x="17" y="12" width="26" height="6" rx="3" fill="#1050cc"/>
+      <ellipse cx="30" cy="25" rx="18" ry="8" fill="#1a5ae0"/>
+      <rect x="12" y="25" width="36" height="55" rx="6" fill="#0a2ea0" fill-opacity=".85"/>
+      <rect x="12" y="25" width="36" height="55" rx="6" fill="url(#lg2)"/>
+      <line x1="12" y1="41" x2="48" y2="41" stroke="#082080" stroke-width="1.2" stroke-opacity=".6"/>
+      <line x1="12" y1="57" x2="48" y2="57" stroke="#082080" stroke-width="1.2" stroke-opacity=".6"/>
+      <line x1="12" y1="73" x2="48" y2="73" stroke="#082080" stroke-width="1.2" stroke-opacity=".6"/>
+      <ellipse cx="30" cy="80" rx="18" ry="8" fill="#1a5ae0"/>
+      <line x1="30" y1="88" x2="24" y2="100" stroke="#1050cc" stroke-width="1.5"/>
+      <line x1="30" y1="88" x2="30" y2="102" stroke="#1050cc" stroke-width="1.5"/>
+      <line x1="30" y1="88" x2="36" y2="100" stroke="#1050cc" stroke-width="1.5"/>
+      <ellipse cx="30" cy="52" rx="12" ry="14" fill="url(#flame2)"/>
+    </svg>
+  </div>
+
+  <!-- ═══ MAIN TEXT ═══ -->
+  <div class="title-wrap">
+    <span class="eid-arabic">عید مبارک</span>
+    <h1 class="eid-title" data-text="Eid Mubarak">Eid Mubarak</h1>
+  </div>
+
+  <div class="ornament">
+    <div class="orn-line"></div>
+    <span class="orn-gem">✦</span>
+    <div class="orn-line"></div>
+  </div>
+
+  <p class="subtitle">May peace, joy &amp; blessings fill your life</p>
+
+  <p class="tap-hint">✦ click anywhere for magic ✦</p>
+
+  <!-- ═══ MOSQUE ═══ -->
+  <div class="mosque-wrap">
+    <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg" width="100%">
+      <defs>
+        <linearGradient id="mGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#121840" stop-opacity=".96"/>
+          <stop offset="100%" stop-color="#04050f" stop-opacity="1"/>
+        </linearGradient>
+        <filter id="glow2"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect x="0" y="160" width="900" height="40" fill="url(#mGrad)"/>
+      <ellipse cx="450" cy="98" rx="80" ry="74" fill="url(#mGrad)"/>
+      <rect x="370" y="98" width="160" height="62" fill="url(#mGrad)"/>
+      <rect x="280" y="58" width="22" height="102" fill="url(#mGrad)"/>
+      <ellipse cx="291" cy="58" rx="14" ry="22" fill="url(#mGrad)"/>
+      <rect x="598" y="58" width="22" height="102" fill="url(#mGrad)"/>
+      <ellipse cx="609" cy="58" rx="14" ry="22" fill="url(#mGrad)"/>
+      <rect x="170" y="92" width="15" height="68" fill="url(#mGrad)"/>
+      <ellipse cx="177" cy="92" rx="10" ry="15" fill="url(#mGrad)"/>
+      <rect x="715" y="92" width="15" height="68" fill="url(#mGrad)"/>
+      <ellipse cx="722" cy="92" rx="10" ry="15" fill="url(#mGrad)"/>
+      <rect x="100" y="118" width="278" height="42" fill="url(#mGrad)"/>
+      <rect x="522" y="118" width="278" height="42" fill="url(#mGrad)"/>
+      <ellipse cx="200" cy="118" rx="40" ry="30" fill="url(#mGrad)"/>
+      <ellipse cx="700" cy="118" rx="40" ry="30" fill="url(#mGrad)"/>
+      <ellipse cx="450" cy="118" rx="18" ry="22" fill="#ffe066" fill-opacity=".17" filter="url(#glow2)"/>
+      <ellipse cx="380" cy="138" rx="10" ry="12" fill="#ffe066" fill-opacity=".1" filter="url(#glow2)"/>
+      <ellipse cx="520" cy="138" rx="10" ry="12" fill="#ffe066" fill-opacity=".1" filter="url(#glow2)"/>
+      <!-- Crescent atop dome -->
+      <g filter="url(#glow2)" opacity=".95">
+        <circle cx="450" cy="28" r="13" fill="none" stroke="#f5c842" stroke-width="2.5"/>
+        <circle cx="456" cy="24" r="10" fill="url(#mGrad)"/>
+        <polygon points="450,8 453,19 464,19 455,26 458,37 450,30 442,37 445,26 436,19 447,19" fill="#f5c842"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     AMBIENCE BADGE (bottom-left circle)
+════════════════════════════ -->
+<div id="ambience-badge" title="Toggle Ambience">
+  <!-- Music note icon -->
+  <svg id="music-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9 18V5l12-2v13" stroke="#f5c842" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="6" cy="18" r="3" stroke="#f5c842" stroke-width="1.8"/>
+    <circle cx="18" cy="16" r="3" stroke="#f5c842" stroke-width="1.8"/>
+  </svg>
+  <span class="badge-label">ambience</span>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   CURSOR
+══════════════════════════════════════ */
+const cur = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top  = e.clientY + 'px';
+});
+document.querySelectorAll('#ambience-badge, #moon').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('big'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+});
+
+/* ══════════════════════════════════════
+   SKY CANVAS
+══════════════════════════════════════ */
+const skyC = document.getElementById('sky');
+const skyX = skyC.getContext('2d');
+let W, H;
+const resize = () => {
+  W = skyC.width = window.innerWidth;
+  H = skyC.height = window.innerHeight;
+};
+resize(); window.addEventListener('resize', resize);
+
+const stars = Array.from({length: 220}, () => ({
+  x: Math.random(), y: Math.random() * .72,
+  r: Math.random() * 1.5 + .3,
+  a: Math.random(),
+  da: (Math.random() * .005 + .002) * (Math.random() < .5 ? 1 : -1),
+  col: Math.random() < .14 ? `hsl(${Math.random()*55+25},75%,80%)` : '#ffffff'
+}));
+
+let aT = 0;
+function drawSky() {
+  skyX.clearRect(0, 0, W, H);
+  const bg = skyX.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0,   '#010410');
+  bg.addColorStop(.4,  '#060e38');
+  bg.addColorStop(.72, '#0c1848');
+  bg.addColorStop(1,   '#101d6a');
+  skyX.fillStyle = bg; skyX.fillRect(0, 0, W, H);
+
+  aT += .0025;
+  for (let i = 0; i < 3; i++) {
+    const g = skyX.createLinearGradient(0, H*.08 + Math.sin(aT+i)*H*.06, 0, H*.5);
+    const h = (175 + i*35 + Math.sin(aT*.6)*25) % 360;
+    g.addColorStop(0, `hsla(${h},65%,50%,0)`);
+    g.addColorStop(.35, `hsla(${h},65%,50%,.038)`);
+    g.addColorStop(1, `hsla(${h},65%,50%,0)`);
+    skyX.fillStyle = g;
+    skyX.beginPath();
+    skyX.ellipse(W*(0.18+i*.32), H*(0.22+Math.sin(aT+i)*.06), W*.38, H*.16, 0, 0, Math.PI*2);
+    skyX.fill();
+  }
+
+  stars.forEach(s => {
+    s.a = Math.max(.04, Math.min(1, s.a + s.da));
+    if (s.a <= .04 || s.a >= 1) s.da *= -1;
+    skyX.save();
+    skyX.globalAlpha = s.a;
+    skyX.fillStyle = s.col;
+    skyX.shadowColor = s.col; skyX.shadowBlur = s.r * 5;
+    skyX.beginPath();
+    skyX.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+    skyX.fill();
+    skyX.restore();
+  });
+  requestAnimationFrame(drawSky);
+}
+drawSky();
+
+/* ══════════════════════════════════════
+   FIREWORKS CANVAS
+══════════════════════════════════════ */
+const fwC = document.getElementById('fw');
+const fwX = fwC.getContext('2d');
+const resFW = () => { fwC.width = innerWidth; fwC.height = innerHeight; };
+resFW(); window.addEventListener('resize', resFW);
+
+const FW_COLORS = ['#f5c842','#ffd700','#ff6b8a','#00e5cc','#b08aff','#ff9040','#80ffb0','#40caff'];
+const fwParts = [];
+
+class Spark {
+  constructor(x, y, col) {
+    this.x = x; this.y = y; this.col = col;
+    const a = Math.random() * Math.PI * 2;
+    const spd = Math.random() * 5.5 + 1.5;
+    this.vx = Math.cos(a) * spd; this.vy = Math.sin(a) * spd;
+    this.life = Math.random() * 55 + 35;
+    this.decay = 1 / this.life;
+    this.alpha = 1;
+    this.r = Math.random() * 2.8 + .8;
+    this.trail = [];
+  }
+  update() {
+    this.trail.push({x:this.x, y:this.y, a:this.alpha});
+    if (this.trail.length > 7) this.trail.shift();
+    this.vy += .07; this.vx *= .975; this.vy *= .975;
+    this.x += this.vx; this.y += this.vy;
+    this.alpha -= this.decay;
+  }
+  draw(ctx) {
+    this.trail.forEach((t, i) => {
+      const p = i / this.trail.length;
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, this.r * p, 0, Math.PI * 2);
+      ctx.fillStyle = this.col;
+      ctx.globalAlpha = t.a * p * .35;
+      ctx.fill();
+    });
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = this.col;
+    ctx.globalAlpha = this.alpha;
+    ctx.shadowColor = this.col; ctx.shadowBlur = this.r * 7;
+    ctx.fill(); ctx.shadowBlur = 0;
+  }
+}
+
+function burst(x, y, n=80) {
+  const c1 = FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)];
+  const c2 = FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)];
+  for (let i = 0; i < n; i++)
+    fwParts.push(new Spark(x, y, Math.random() < .6 ? c1 : c2));
+}
+
+(function fwLoop() {
+  fwX.clearRect(0, 0, fwC.width, fwC.height);
+  for (let i = fwParts.length - 1; i >= 0; i--) {
+    fwParts[i].update(); fwParts[i].draw(fwX);
+    if (fwParts[i].alpha <= 0) fwParts.splice(i, 1);
+  }
+  requestAnimationFrame(fwLoop);
+})();
+
+// Auto-burst on load
+const autoPos = [[.25,.32],[.75,.28],[.5,.22],[.15,.38],[.85,.35]];
+autoPos.forEach(([rx,ry], i) =>
+  setTimeout(() => burst(rx * innerWidth, ry * innerHeight, 90), 1800 + i * 260)
+);
+
+// Moon click = grand fireworks show
+document.getElementById('moonWrap').addEventListener('click', () => {
+  const positions = [
+    [.5,.2],[.2,.3],[.8,.28],[.35,.15],[.65,.18],[.1,.4],[.9,.38],[.5,.38]
+  ];
+  positions.forEach(([rx,ry], i) =>
+    setTimeout(() => burst(rx * innerWidth, ry * innerHeight, 100), i * 140)
+  );
+});
+
+// Click anywhere else = mini ripple + small burst
+document.addEventListener('click', e => {
+  if (e.target.closest('#moonWrap, #ambience-badge')) return;
+  const r = document.createElement('div');
+  r.className = 'ripple';
+  r.style.left = e.clientX + 'px'; r.style.top = e.clientY + 'px';
+  document.body.appendChild(r);
+  setTimeout(() => r.remove(), 700);
+  burst(e.clientX, e.clientY, 35);
+});
+
+// Touch = burst
+document.addEventListener('touchstart', e => {
+  const t = e.touches[0];
+  if (t.target.closest('#ambience-badge')) return;
+  burst(t.clientX, t.clientY, 40);
+  const r = document.createElement('div');
+  r.className = 'ripple';
+  r.style.left = t.clientX + 'px'; r.style.top = t.clientY + 'px';
+  document.body.appendChild(r);
+  setTimeout(() => r.remove(), 700);
+}, {passive: true});
+
+/* ══════════════════════════════════════
+   FLOATING PARTICLES
+══════════════════════════════════════ */
+const pCols = ['#f5c842','#ffd700','#ffe499','#ff9040','#00e5cc','#c0a0ff'];
+for (let i = 0; i < 45; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const sz = Math.random() * 4.5 + 1.5;
+  p.style.cssText = `
+    width:${sz}px; height:${sz}px;
+    left:${Math.random()*100}vw; top:${78+Math.random()*22}vh;
+    background:${pCols[Math.floor(Math.random()*pCols.length)]};
+    --dur:${5+Math.random()*9}s; --del:${Math.random()*10}s;
+    box-shadow:0 0 ${sz*3}px currentColor;
+  `;
+  document.body.appendChild(p);
+}
+
+/* ══════════════════════════════════════
+   SHOOTING STAR (DOM)
+══════════════════════════════════════ */
+document.body.insertAdjacentHTML('beforeend','<div class="shoot"></div>');
+
+/* ══════════════════════════════════════
+   RICH AMBIENCE  —  Web Audio API
+   ─────────────────────────────────────
+   TO USE YOUR OWN AUDIO FILE:
+     1. Host an .mp3 / .ogg somewhere (e.g. Google Drive public link, Dropbox, etc.)
+     2. Replace the value of CUSTOM_AUDIO_URL below with your direct file link.
+     3. Set USE_CUSTOM_AUDIO = true.
+   The built-in synth plays if USE_CUSTOM_AUDIO is false.
+══════════════════════════════════════ */
+const USE_CUSTOM_AUDIO  = false;
+const CUSTOM_AUDIO_URL  = 'https://your-audio-file-url-here.mp3';
+
+let audioCtx, masterGain, reverbNode;
+let playing = false;
+let oscNodes = [], timeouts = [];
+let customAudio = null;
+
+/* Build a simple convolution reverb */
+function makeReverb(ctx, secs=3, decay=2) {
+  const sr = ctx.sampleRate;
+  const len = sr * secs;
+  const buf = ctx.createBuffer(2, len, sr);
+  for (let c = 0; c < 2; c++) {
+    const ch = buf.getChannelData(c);
+    for (let i = 0; i < len; i++)
+      ch[i] = (Math.random()*2-1) * Math.pow(1 - i/len, decay);
+  }
+  const conv = ctx.createConvolver();
+  conv.buffer = buf;
+  return conv;
+}
+
+/* Pentatonic scale in A (A, C, D, E, G) across 3 octaves */
+const PENTA = [220,261.63,293.66,329.63,392,440,523.25,587.33,659.25,784,880];
+
+function playNote(freq, when, dur, vol=.06, type='sine') {
+  if (!audioCtx || !playing) return;
+  const osc = audioCtx.createOscillator();
+  const g   = audioCtx.createGain();
+  osc.type = type; osc.frequency.value = freq;
+  g.gain.setValueAtTime(0, when);
+  g.gain.linearRampToValueAtTime(vol, when + .04);
+  g.gain.exponentialRampToValueAtTime(.0001, when + dur);
+  osc.connect(g); g.connect(reverbNode);
+  osc.start(when); osc.stop(when + dur + .05);
+  oscNodes.push(osc, g);
+}
+
+/* Randomly arpeggiate pentatonic notes */
+function scheduleArp() {
+  if (!playing) return;
+  const now = audioCtx.currentTime;
+  const root = PENTA[Math.floor(Math.random() * 6)];      // lower notes
+  const high = PENTA[Math.floor(Math.random() * 5) + 5];  // higher notes
+
+  // Chord pad (3 notes together, long sustain)
+  playNote(root,        now,     4.5, .055, 'sine');
+  playNote(root * 1.25, now,     4.5, .04,  'sine');
+  playNote(root * 1.5,  now,     4.5, .03,  'triangle');
+
+  // Melody chime (single bright note)
+  const chimeDelay = 1.2 + Math.random() * 2;
+  playNote(high, now + chimeDelay, 2.2, .07, 'triangle');
+
+  // Optional second chime
+  if (Math.random() < .55)
+    playNote(PENTA[Math.floor(Math.random()*PENTA.length)], now + chimeDelay + 1, 1.8, .05, 'triangle');
+
+  const next = (3 + Math.random() * 3) * 1000;
+  const tid = setTimeout(scheduleArp, next);
+  timeouts.push(tid);
+}
+
+/* Deep drone */
+function startDrone() {
+  if (!audioCtx) return;
+  [55, 110, 165].forEach((f, i) => {
+    const osc = audioCtx.createOscillator();
+    const g   = audioCtx.createGain();
+    osc.type = 'sine'; osc.frequency.value = f;
+    g.gain.value = [.08, .05, .025][i];
+    osc.connect(g); g.connect(reverbNode);
+    osc.start(); oscNodes.push(osc, g);
+  });
+}
+
+function startSynth() {
+  audioCtx  = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain(); masterGain.gain.value = .7;
+  reverbNode = makeReverb(audioCtx, 4, 2.2);
+  reverbNode.connect(masterGain);
+  masterGain.connect(audioCtx.destination);
+  playing = true;
+  startDrone();
+  scheduleArp();
+}
+
+function stopSynth() {
+  playing = false;
+  timeouts.forEach(clearTimeout); timeouts = [];
+  oscNodes.forEach(n => { try { n.stop?.(); n.disconnect?.(); } catch(e){} });
+  oscNodes = [];
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+}
+
+function startCustom() {
+  if (!customAudio) {
+    customAudio = new Audio(CUSTOM_AUDIO_URL);
+    customAudio.loop = true;
+    customAudio.volume = .65;
+  }
+  customAudio.play().catch(() => {});
+  playing = true;
+}
+function stopCustom() {
+  if (customAudio) { customAudio.pause(); customAudio.currentTime = 0; }
+  playing = false;
+}
+
+const badge = document.getElementById('ambience-badge');
+const musicIcon = document.getElementById('music-icon');
+
+badge.addEventListener('click', () => {
+  if (playing) {
+    USE_CUSTOM_AUDIO ? stopCustom() : stopSynth();
+    badge.style.borderColor = 'rgba(245,200,66,.35)';
+    badge.style.boxShadow = '0 0 18px rgba(245,200,66,.2), inset 0 0 12px rgba(245,200,66,.06)';
+    musicIcon.style.opacity = '.45';
+  } else {
+    USE_CUSTOM_AUDIO ? startCustom() : startSynth();
+    badge.style.borderColor = 'rgba(245,200,66,.85)';
+    badge.style.boxShadow = '0 0 30px rgba(245,200,66,.55), inset 0 0 18px rgba(245,200,66,.14)';
+    musicIcon.style.opacity = '1';
+  }
+});
+</script>
+</body>
+</html>
